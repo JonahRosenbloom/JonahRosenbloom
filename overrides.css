@@ -1,0 +1,321 @@
+/* ==========================================================================
+   overrides.css - small fixes layered on top of the captured Wix CSS
+   (things Wix's JS runtime normally did, or that pointed at Wix-only assets)
+   ========================================================================== */
+
+/* The "Built on Wix" banner was removed, so drop the space reserved for it */
+:root, body, #SITE_CONTAINER, #site-root, #main_MF {
+  --wix-ads-height: 0px;
+  --wix-ads-top-height: 0px;
+}
+#WIX_ADS { display: none !important; }
+
+/* Project gallery + lightbox: see the .projects-* rules near the end of this
+   file for the custom-built replacement (the captured Wix gallery component
+   fought every layout rule with !important, so it was simpler to rebuild). */
+
+/* ==========================================================================
+   Header (see partials/header.js)
+   ========================================================================== */
+.site-header {
+  position: relative;
+  z-index: 1000;
+  background: var(--wst-base-1-color, #0A101E);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.site-header__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 10px clamp(20px, 4vw, 60px);
+}
+.site-header__brand { display: flex; align-items: center; gap: 10px; text-decoration: none; flex: 0 0 auto; }
+.site-header__logo { width: 60px; height: 60px; object-fit: contain; display: block; }
+.site-header__wordmark {
+  color: #fff;
+  font: 700 20px/1 'tektur', sans-serif;
+  letter-spacing: .02em;
+}
+.site-header__nav-list {
+  display: flex; align-items: center; gap: clamp(18px, 2.4vw, 40px);
+  list-style: none; margin: 0; padding: 0;
+}
+.site-header__link {
+  position: relative;
+  color: rgba(255, 255, 255, .8);
+  text-decoration: none;
+  font: 500 15px/1.2 'ibm-plex-mono', monospace;
+  letter-spacing: .03em;
+  padding: 6px 0;
+  transition: color .2s;
+}
+.site-header__link:hover, .site-header__link:focus-visible { color: #fff; }
+.site-header__link[aria-current="page"] { color: var(--wst-accent-1-color, #00F0FF); }
+.site-header__link[aria-current="page"]::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px;
+  background: var(--wst-accent-1-color, #00F0FF);
+}
+.site-header__burger {
+  display: none;
+  background: none; border: 0; padding: 6px; cursor: pointer;
+  color: #fff;
+}
+@media screen and (max-width: 860px) {
+  .site-header__nav-list { display: none; }
+  .site-header__burger { display: inline-flex; }
+}
+
+/* Mobile menu overlay (built by script.js) */
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 100000;
+  background: var(--wst-base-1-color, #0A101E);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  animation: mm-in .25s ease-out;
+}
+.mobile-menu[hidden] { display: none; }
+.mobile-menu ul { list-style: none; margin: 0; padding: 0; text-align: center; }
+.mobile-menu li { margin: 0; padding: 0; }
+.mobile-menu a {
+  display: block; padding: 14px 24px;
+  font: 500 28px/1.2 'tektur', 'ibm-plex-mono', sans-serif;
+  color: #fff; text-decoration: none; letter-spacing: .02em;
+}
+.mobile-menu a:hover, .mobile-menu a:focus-visible,
+.mobile-menu a[aria-current] { color: var(--wst-accent-1-color, #00F0FF); }
+.mobile-menu__close {
+  position: absolute; top: 18px; right: 22px;
+  background: none; border: 0; cursor: pointer;
+  color: var(--wst-accent-1-color, #00F0FF);
+  font: 300 44px/1 sans-serif; padding: 6px 12px;
+}
+@keyframes mm-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Form: keep the inline error text readable */
+[data-hook^="field-error-"] { min-height: 0; }
+
+/* Decorative background layers (Wix's per-section backdrop divs) should never
+   swallow clicks meant for real content stacked in front of them. */
+._backgroundLayer_1xyyz_25,
+[data-testid="internal-container-background-layer"],
+._backgroundLayer_1xyyz_25 *,
+[data-testid="internal-container-background-layer"] * {
+  pointer-events: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu { animation: none; }
+}
+
+/* ==========================================================================
+   Key Projects gallery + lightbox (custom-built; see script.js section 3)
+   ========================================================================== */
+.projects-gallery {
+  position: relative;
+  width: 100%;
+  height: clamp(320px, 36vw, 640px);
+  overflow: hidden;
+  background: var(--wst-base-1-color, #0A101E);
+}
+.projects-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.projects-track::-webkit-scrollbar { display: none; }
+.projects-slide {
+  position: relative;
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  scroll-snap-align: start;
+  overflow: hidden;
+  background: none;
+}
+.projects-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  transition: transform .5s ease;
+}
+.projects-slide:hover img, .projects-slide:focus-visible img { transform: scale(1.03); }
+.projects-slide__caption {
+  position: absolute;
+  left: 0; bottom: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  max-width: 100%;
+  padding: 14px 18px;
+  background: linear-gradient(0deg, rgba(10, 16, 30, .78), rgba(10, 16, 30, 0) 90%);
+  color: var(--wst-accent-1-color, #00F0FF);
+  font: 500 15px/1.3 'ibm-plex-mono', monospace;
+  letter-spacing: .06em;
+  text-align: left;
+  box-sizing: border-box;
+}
+.projects-slide__counter { opacity: .6; }
+@media screen and (max-width: 767px) {
+  .projects-slide { flex-basis: 100%; width: 100%; }
+  .projects-gallery { height: 82vw; max-height: 520px; }
+}
+
+.projects-arrow {
+  position: absolute; top: 50%; z-index: 5;
+  transform: translateY(-50%);
+  width: 48px; height: 48px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(10, 16, 30, .6);
+  border: 1px solid rgba(255, 255, 255, .25);
+  color: #fff; cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.projects-arrow:hover { border-color: var(--wst-accent-1-color, #00F0FF); }
+.projects-arrow--prev { left: 24px; }
+.projects-arrow--next { right: 24px; }
+
+.projects-lightbox {
+  position: fixed; inset: 0; z-index: 100000;
+  display: none;
+  align-items: center; justify-content: center;
+  background: var(--wst-base-1-color, #0A101E);
+  color: #fff;
+}
+.projects-lightbox.is-open { display: flex; }
+.projects-lightbox__stage {
+  position: relative;
+  max-width: min(1100px, 88vw);
+  max-height: 82vh;
+}
+.projects-lightbox__stage img {
+  display: block;
+  max-width: min(1100px, 88vw);
+  max-height: 82vh;
+  width: auto; height: auto;
+  object-fit: contain;
+}
+.projects-lightbox__caption { margin-top: 18px; }
+.projects-lightbox__counter {
+  display: block;
+  color: var(--wst-accent-1-color, #00F0FF);
+  font: 500 14px/1.2 'ibm-plex-mono', monospace;
+  letter-spacing: .08em;
+  margin-bottom: 6px;
+}
+.projects-lightbox__title {
+  margin: 0 0 4px;
+  color: #fff;
+  font: var(--wst-heading-3-font, 700 26px/1.2 'tektur', sans-serif);
+  text-transform: uppercase;
+}
+.projects-lightbox__desc {
+  margin: 0;
+  color: var(--wst-accent-1-color, #00F0FF);
+  font: 400 14px/1.5 'ibm-plex-mono', monospace;
+  letter-spacing: .06em;
+}
+.projects-lightbox__btn {
+  position: absolute; z-index: 2;
+  width: 48px; height: 48px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(10, 16, 30, .6);
+  border: 1px solid rgba(255, 255, 255, .25);
+  color: #fff; cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.projects-lightbox__btn:hover:not(:disabled) { border-color: var(--wst-accent-1-color, #00F0FF); }
+.projects-lightbox__btn:disabled { opacity: .3; cursor: default; }
+.projects-lightbox__close { top: 24px; right: 24px; }
+.projects-lightbox__prev { top: 50%; left: 24px; transform: translateY(-50%); }
+.projects-lightbox__next { top: 50%; right: 24px; transform: translateY(-50%); }
+@media screen and (max-width: 640px) {
+  .projects-lightbox__prev { left: 10px; }
+  .projects-lightbox__next { right: 10px; }
+  .projects-lightbox__close { top: 12px; right: 12px; }
+}
+
+/* ==========================================================================
+   Footer: one row (logo+tagline / social icons / email+location+copyright)
+   ========================================================================== */
+.site-footer {
+  background: var(--wst-base-1-color, #0A101E);
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  padding: 22px clamp(20px, 4vw, 60px);
+}
+.site-footer__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 28px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.site-footer__brand {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none; color: #fff;
+  flex: 0 0 auto;
+}
+.site-footer__logo { width: 52px; height: 52px; object-fit: contain; flex: none; }
+.site-footer__tagline {
+  font: 400 12px/1.2 'ibm-plex-mono', monospace;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(255, 255, 255, .7);
+  white-space: nowrap;
+}
+.site-footer__social { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
+.site-footer__social-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+  color: #fff; transition: background .2s, color .2s;
+}
+.site-footer__social-link:hover { background: var(--wst-accent-1-color, #00F0FF); color: #0A101E; }
+.site-footer__contact {
+  display: flex; align-items: center; gap: 8px; flex: 0 0 auto;
+  font: 400 13px/1.2 'ibm-plex-mono', monospace;
+  letter-spacing: .04em;
+  color: rgba(255, 255, 255, .75);
+  white-space: nowrap;
+}
+.site-footer__contact a { color: rgba(255, 255, 255, .75); text-decoration: none; }
+.site-footer__contact a:hover { color: var(--wst-accent-1-color, #00F0FF); }
+.site-footer__dot { opacity: .4; }
+.site-footer__copyright { color: rgba(255, 255, 255, .5); }
+@media screen and (max-width: 700px) {
+  .site-footer__row { justify-content: center; text-align: center; }
+  .site-footer__contact { flex-wrap: wrap; justify-content: center; }
+}
+
+/* ==========================================================================
+   Marquee: the captured CSS ships paused (Wix set it running at runtime)
+   ========================================================================== */
+._marqueeUnitContainer_z4m05_32 { --marquee-animation-state: running; --marquee-clicked: running; --marquee-duration: 300s; }
+.text-marquee.stopMarquee ._marqueeUnitContainer_z4m05_32 { --marquee-animation-state: paused; --marquee-clicked: paused; }
+
+
+/* Whatever is setting pointer-events:none upstream (Wix's scroll-motion
+   gating on interact-element wrappers), force it back on for the gallery
+   we control explicitly. */
+.projects-gallery, .projects-track, .projects-slide, .projects-arrow,
+.projects-lightbox, .projects-lightbox * {
+  pointer-events: auto !important;
+}
+
+
+/* Same upstream pointer-events:none gating affects our header/footer partials
+   when they scroll out of the initial viewport; force them clickable too. */
+.site-header, .site-header *, .site-footer, .site-footer *,
+.mobile-menu, .mobile-menu * {
+  pointer-events: auto !important;
+}
